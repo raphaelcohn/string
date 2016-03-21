@@ -66,19 +66,25 @@ public final class StringUtilities
 	@NotNull
 	public static byte[] encodeUtf8BytesWithCertaintyValueIsValid(@NonNls @NotNull final String value)
 	{
-		final ByteBuffer byteBuffer = allocate(maximumUtf16ToUtf8EncodingSize(value));
 		try
 		{
-			encodeUtf8Bytes(value, utf8Byte ->
-			{
-				//noinspection NumericCastThatLosesPrecision
-				byteBuffer.put((byte) utf8Byte);
-			});
+			return encodeUtf8Bytes(value);
 		}
 		catch (final InvalidUtf16StringException e)
 		{
 			throw new IllegalArgumentException("value was not a valid UTF-16 string", e);
 		}
+	}
+
+	@NotNull
+	public static byte[] encodeUtf8Bytes(@NonNls @NotNull final String value) throws InvalidUtf16StringException
+	{
+		final ByteBuffer byteBuffer = allocate(maximumUtf16ToUtf8EncodingSize(value));
+		encodeUtf8Bytes(value, utf8Byte ->
+		{
+			//noinspection NumericCastThatLosesPrecision
+			byteBuffer.put((byte) utf8Byte);
+		});
 		final byte[] underlying = byteBuffer.array();
 		final int length = byteBuffer.position();
 		final byte[] slice = new byte[length];
