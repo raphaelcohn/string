@@ -129,13 +129,13 @@ public final class StringUtilities
 	public static <X extends Exception> void iterateOverStringCodePoints(@NotNull final String value, @NotNull final CodePointUser<X> codePointUser) throws InvalidUtf16StringException, X
 	{
 		int index = 0;
-		int indexIncrement;
 		final int length = value.length();
 		while (index < length)
 		{
 			final char firstCharacter = value.charAt(index);
 
 			final int codePoint;
+			final int indexIncrement;
 			if (isHighSurrogate(firstCharacter))
 			{
 				final char low;
