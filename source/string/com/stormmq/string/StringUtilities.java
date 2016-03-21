@@ -25,8 +25,12 @@ package com.stormmq.string;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
+import java.nio.ByteBuffer;
+
 import static java.lang.Character.*;
 import static java.lang.String.format;
+import static java.lang.System.arraycopy;
+import static java.nio.ByteBuffer.allocate;
 import static java.util.Locale.ENGLISH;
 
 public final class StringUtilities
@@ -57,6 +61,29 @@ public final class StringUtilities
 	public static int maximumUtf16ToUtf8EncodingSize(@NotNull final String fullyQualifiedTypeName)
 	{
 		return fullyQualifiedTypeName.length() * 3;
+	}
+
+	@NotNull
+	public static byte[] encodeUtf8BytesWithCertaintyValueIsValid(@NonNls @NotNull final String value)
+	{
+		final ByteBuffer byteBuffer = allocate(maximumUtf16ToUtf8EncodingSize(value));
+		try
+		{
+			encodeUtf8Bytes(value, utf8Byte ->
+			{
+				//noinspection NumericCastThatLosesPrecision
+				byteBuffer.put((byte) utf8Byte);
+			});
+		}
+		catch (final InvalidUtf16StringException e)
+		{
+			throw new IllegalArgumentException("value was not a valid UTF-16 string", e);
+		}
+		final byte[] underlying = byteBuffer.array();
+		final int length = byteBuffer.position();
+		final byte[] slice = new byte[length];
+		arraycopy(underlying, 0, slice, 0, length);
+		return slice;
 	}
 
 	@SuppressWarnings("MagicNumber")
