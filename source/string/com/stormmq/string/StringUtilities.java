@@ -25,6 +25,7 @@ package com.stormmq.string;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import static java.lang.Character.*;
@@ -75,7 +76,7 @@ public final class StringUtilities
 	}
 
 	@NotNull
-	public static byte[] encodeUtf8Bytes(@NonNls @NotNull final String value) throws InvalidUtf16StringException
+	public static byte[] encodeUtf8Bytes(@NonNls @NotNull final CharSequence value) throws InvalidUtf16StringException
 	{
 		final ByteBuffer byteBuffer = allocate(maximumUtf16ToUtf8EncodingSize(value));
 		encodeUtf8Bytes(value, utf8Byte ->
@@ -168,6 +169,12 @@ public final class StringUtilities
 
 			index += indexIncrement;
 		}
+	}
+
+	@NotNull
+	public static IOException enumSerializationIsNotSupportedForConstantsInASecureContext()
+	{
+		return new IOException("Enum serialization is not supported for constants in a secure context");
 	}
 
 	private StringUtilities()
