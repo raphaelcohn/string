@@ -91,7 +91,7 @@ public final class StringUtilities
 	}
 
 	@SuppressWarnings("MagicNumber")
-	public static <X extends Exception> void encodeUtf8Bytes(@NotNull final String value, @NotNull final Utf8ByteUser<X> utf8ByteUser) throws InvalidUtf16StringException, X
+	public static <X extends Exception> void encodeUtf8Bytes(@NotNull final CharSequence value, @NotNull final Utf8ByteUser<X> utf8ByteUser) throws InvalidUtf16StringException, X
 	{
 		iterateOverStringCodePoints(value, (index, codePoint) ->
 		{

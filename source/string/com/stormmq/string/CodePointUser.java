@@ -22,8 +22,6 @@
 
 package com.stormmq.string;
 
-import org.jetbrains.annotations.NotNull;
-
 // Modelled after IntConsumer
 @FunctionalInterface
 public interface CodePointUser<X extends Exception>
