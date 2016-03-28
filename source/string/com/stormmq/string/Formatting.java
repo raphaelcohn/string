@@ -41,7 +41,7 @@ public final class Formatting
 	{
 	}
 
-	@SuppressWarnings({"OverloadedVarargsMethod", "SynchronizationOnLocalVariableOrMethodParameter", "resource"})
+	@SuppressWarnings({"SynchronizationOnLocalVariableOrMethodParameter", "resource"})
 	@NonNls
 	public static void formatPrintLineAndFlushWhilstSynchronized(@NotNull final PrintStream printStream, @NotNull@NonNls final String template, @NotNull @NonNls final Object... arguments)
 	{

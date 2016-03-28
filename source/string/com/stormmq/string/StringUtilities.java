@@ -38,7 +38,7 @@ public final class StringUtilities
 
 	@NonNls
 	@NotNull
-	public static String aOrAn(@NonNls @NotNull final String what)
+	public static String aOrAn(@NonNls @NotNull final CharSequence what)
 	{
 		switch (what.charAt(0))
 		{
@@ -56,7 +56,7 @@ public final class StringUtilities
 		}
 	}
 
-	public static int maximumUtf16ToUtf8EncodingSize(@NotNull final String fullyQualifiedTypeName)
+	public static int maximumUtf16ToUtf8EncodingSize(@NotNull final CharSequence fullyQualifiedTypeName)
 	{
 		return fullyQualifiedTypeName.length() * 3;
 	}
@@ -130,7 +130,7 @@ public final class StringUtilities
 	}
 
 	// We do not use Java's built in methods in string because they incorrectly try to correct for wrong high surrogates, etc
-	public static <X extends Exception> void iterateOverStringCodePoints(@NotNull final String value, @NotNull final CodePointUser<X> codePointUser) throws InvalidUtf16StringException, X
+	public static <X extends Exception> void iterateOverStringCodePoints(@NotNull final CharSequence value, @NotNull final CodePointUser<X> codePointUser) throws InvalidUtf16StringException, X
 	{
 		int index = 0;
 		final int length = value.length();

@@ -22,11 +22,13 @@
 
 package com.stormmq.string;
 
-import org.jetbrains.annotations.NotNull;
+import java.lang.annotation.*;
 
-// Modelled after IntConsumer
-@FunctionalInterface
-public interface CodePointUser<X extends Exception>
+import static java.lang.annotation.ElementType.*;
+import static java.lang.annotation.RetentionPolicy.CLASS;
+
+@Target({CONSTRUCTOR, FIELD, METHOD, TYPE})
+@Retention(CLASS)
+public @interface Api
 {
-	void useCodePoint(final int index, final int codePoint) throws X;
 }
