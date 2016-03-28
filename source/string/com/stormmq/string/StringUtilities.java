@@ -28,10 +28,8 @@ import org.jetbrains.annotations.NotNull;
 import java.nio.ByteBuffer;
 
 import static java.lang.Character.*;
-import static java.lang.String.format;
 import static java.lang.System.arraycopy;
 import static java.nio.ByteBuffer.allocate;
-import static java.util.Locale.ENGLISH;
 
 public final class StringUtilities
 {
@@ -127,7 +125,7 @@ public final class StringUtilities
 				return;
 			}
 
-			throw new IllegalArgumentException(format(ENGLISH, "Invalid Unicode Code Point '0x%1$s' greater than 0x1FFFFF at index '%2$s' which should be impossible to exist in this context", Integer.toBinaryString(codePoint), index));
+			throw new IllegalArgumentException(Formatting.format("Invalid Unicode Code Point '0x%1$s' greater than 0x1FFFFF at index '%2$s' which should be impossible to exist in this context", Integer.toBinaryString(codePoint), index));
 		});
 	}
 
@@ -151,14 +149,14 @@ public final class StringUtilities
 				}
 				catch (final StringIndexOutOfBoundsException e)
 				{
-					throw new InvalidUtf16StringException(format(ENGLISH, "String value contains a missing final low surrogate after index '%1$s'", index), e);
+					throw new InvalidUtf16StringException(Formatting.format("String value contains a missing final low surrogate after index '%1$s'", index), e);
 				}
 				codePoint = toCodePoint(firstCharacter, low);
 				indexIncrement = HighSurrogateIncrement;
 			}
 			else if (isLowSurrogate(firstCharacter))
 			{
-				throw new InvalidUtf16StringException(format(ENGLISH, "String value contains a low surrogate without a preceding high surrogate at index '%1$s'", index));
+				throw new InvalidUtf16StringException(Formatting.format("String value contains a low surrogate without a preceding high surrogate at index '%1$s'", index));
 			}
 			else
 			{
