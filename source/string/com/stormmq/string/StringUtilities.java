@@ -27,6 +27,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.function.Consumer;
 
 import static com.stormmq.string.Formatting.format;
 import static java.lang.Character.*;
@@ -56,6 +57,20 @@ public final class StringUtilities
 			default:
 				return "A";
 		}
+	}
+
+	public static void split(@NotNull final String toSplit, final char characterToSplitOn, @NotNull final Consumer<String> user)
+	{
+		int fromIndex = 0;
+		int index;
+		do
+		{
+			index = toSplit.indexOf(characterToSplitOn, fromIndex);
+			final String identifier = index == -1 ? toSplit.substring(fromIndex) : toSplit.substring(fromIndex, index);
+			fromIndex = index + 1;
+
+			user.accept(identifier);
+		} while (index != -1);
 	}
 
 	public static int maximumUtf16ToUtf8EncodingSize(@NotNull final CharSequence fullyQualifiedTypeName)
@@ -90,6 +105,23 @@ public final class StringUtilities
 		final byte[] slice = new byte[length];
 		arraycopy(underlying, 0, slice, 0, length);
 		return slice;
+	}
+
+	public static int utf8Length(@NotNull @NonNls final CharSequence value) throws InvalidUtf16StringException
+	{
+		class Counter implements Utf8ByteUser<RuntimeException>
+		{
+			public int count = 0;
+
+			@Override
+			public void useUnsignedByte(final int utf8Byte)
+			{
+				count++;
+			}
+		};
+		final Counter counter = new Counter();
+		encodeUtf8Bytes(value, counter);
+		return counter.count;
 	}
 
 	@SuppressWarnings("MagicNumber")
