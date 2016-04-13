@@ -22,9 +22,59 @@
 
 package com.stormmq.string;
 
-// Modelled after IntConsumer
+import org.jetbrains.annotations.NotNull;
+
+import static com.stormmq.string.Formatting.format;
+import static java.lang.Character.isHighSurrogate;
+import static java.lang.Character.isLowSurrogate;
+import static java.lang.Character.toCodePoint;
+
 @FunctionalInterface
 public interface CodePointUser<X extends Exception>
 {
+	int HighSurrogateIncrement = 2;
+
+	int NonSurrogateIncrement = 1;
+
 	void useCodePoint(final int index, final int codePoint) throws X;
+
+	default void iterateOverStringCodePoints(@NotNull final CharSequence value) throws InvalidUtf16StringException, X
+	{
+		int index = 0;
+		final int length = value.length();
+		while (index < length)
+		{
+			final char firstCharacter = value.charAt(index);
+
+			final int codePoint;
+			final int indexIncrement;
+			if (isHighSurrogate(firstCharacter))
+			{
+				final char low;
+				try
+				{
+					low = value.charAt(index + 1);
+				}
+				catch (final StringIndexOutOfBoundsException e)
+				{
+					throw new InvalidUtf16StringException(format("String value contains a missing final low surrogate after index '%1$s'", index), e);
+				}
+				codePoint = toCodePoint(firstCharacter, low);
+				indexIncrement = HighSurrogateIncrement;
+			}
+			else if (isLowSurrogate(firstCharacter))
+			{
+				throw new InvalidUtf16StringException(format("String value contains a low surrogate without a preceding high surrogate at index '%1$s'", index));
+			}
+			else
+			{
+				codePoint = firstCharacter;
+				indexIncrement = NonSurrogateIncrement;
+			}
+
+			useCodePoint(index, codePoint);
+
+			index += indexIncrement;
+		}
+	}
 }

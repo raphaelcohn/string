@@ -26,19 +26,10 @@ import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.function.Consumer;
-
-import static com.stormmq.string.Formatting.format;
-import static java.lang.Character.*;
-import static java.lang.System.arraycopy;
-import static java.nio.ByteBuffer.allocate;
 
 public final class StringUtilities
 {
-	private static final int HighSurrogateIncrement = 2;
-	private static final int NonSurrogateIncrement = 1;
-
 	@NonNls
 	@NotNull
 	public static String aOrAn(@NonNls @NotNull final CharSequence what)
@@ -71,137 +62,6 @@ public final class StringUtilities
 
 			user.accept(identifier);
 		} while (index != -1);
-	}
-
-	public static int maximumUtf16ToUtf8EncodingSize(@NotNull final CharSequence fullyQualifiedTypeName)
-	{
-		return fullyQualifiedTypeName.length() * 3;
-	}
-
-	@NotNull
-	public static byte[] encodeUtf8BytesWithCertaintyValueIsValid(@NonNls @NotNull final String value)
-	{
-		try
-		{
-			return encodeUtf8Bytes(value);
-		}
-		catch (final InvalidUtf16StringException e)
-		{
-			throw new IllegalArgumentException("value was not a valid UTF-16 string", e);
-		}
-	}
-
-	@NotNull
-	public static byte[] encodeUtf8Bytes(@NonNls @NotNull final CharSequence value) throws InvalidUtf16StringException
-	{
-		final ByteBuffer byteBuffer = allocate(maximumUtf16ToUtf8EncodingSize(value));
-		encodeUtf8Bytes(value, utf8Byte ->
-		{
-			//noinspection NumericCastThatLosesPrecision
-			byteBuffer.put((byte) utf8Byte);
-		});
-		final byte[] underlying = byteBuffer.array();
-		final int length = byteBuffer.position();
-		final byte[] slice = new byte[length];
-		arraycopy(underlying, 0, slice, 0, length);
-		return slice;
-	}
-
-	public static int utf8Length(@NotNull @NonNls final CharSequence value) throws InvalidUtf16StringException
-	{
-		class Counter implements Utf8ByteUser<RuntimeException>
-		{
-			public int count = 0;
-
-			@Override
-			public void useUnsignedByte(final int utf8Byte)
-			{
-				count++;
-			}
-		};
-		final Counter counter = new Counter();
-		encodeUtf8Bytes(value, counter);
-		return counter.count;
-	}
-
-	@SuppressWarnings("MagicNumber")
-	public static <X extends Exception> void encodeUtf8Bytes(@NotNull final CharSequence value, @NotNull final Utf8ByteUser<X> utf8ByteUser) throws InvalidUtf16StringException, X
-	{
-		iterateOverStringCodePoints(value, (index, codePoint) ->
-		{
-			if (codePoint < 0x80)
-			{
-				utf8ByteUser.useUnsignedByte(codePoint);
-				return;
-			}
-
-			if (codePoint < 0x07FF)
-			{
-				utf8ByteUser.useUnsignedByte(192 + (codePoint >>> 6));
-				utf8ByteUser.useUnsignedByte(128 + (codePoint % 64));
-				return;
-			}
-
-			if (codePoint < 0xFFFF)
-			{
-				utf8ByteUser.useUnsignedByte(224 + (codePoint >>> 12));
-				utf8ByteUser.useUnsignedByte(128 + ((codePoint >> 6) & 0x3F));
-				utf8ByteUser.useUnsignedByte(128 + (codePoint & 0x3F));
-				return;
-			}
-
-			if (codePoint < 0x1FFFFF)
-			{
-				utf8ByteUser.useUnsignedByte(240 + (codePoint >>> 18));
-				utf8ByteUser.useUnsignedByte(128 + ((codePoint >>> 12) & 0x3F));
-				utf8ByteUser.useUnsignedByte(128 + ((codePoint >>> 6) & 0x3F));
-				utf8ByteUser.useUnsignedByte(128 + (codePoint & 0x3F));
-				return;
-			}
-
-			throw new IllegalArgumentException(format("Invalid Unicode Code Point '0x%1$08X' greater than 0x1FFFFF at index '%2$s' which should be impossible to exist in this context", codePoint, index));
-		});
-	}
-
-	// We do not use Java's built in methods in string because they incorrectly try to correct for wrong high surrogates, etc
-	public static <X extends Exception> void iterateOverStringCodePoints(@NotNull final CharSequence value, @NotNull final CodePointUser<X> codePointUser) throws InvalidUtf16StringException, X
-	{
-		int index = 0;
-		final int length = value.length();
-		while (index < length)
-		{
-			final char firstCharacter = value.charAt(index);
-
-			final int codePoint;
-			final int indexIncrement;
-			if (isHighSurrogate(firstCharacter))
-			{
-				final char low;
-				try
-				{
-					low = value.charAt(index + 1);
-				}
-				catch (final StringIndexOutOfBoundsException e)
-				{
-					throw new InvalidUtf16StringException(format("String value contains a missing final low surrogate after index '%1$s'", index), e);
-				}
-				codePoint = toCodePoint(firstCharacter, low);
-				indexIncrement = HighSurrogateIncrement;
-			}
-			else if (isLowSurrogate(firstCharacter))
-			{
-				throw new InvalidUtf16StringException(format("String value contains a low surrogate without a preceding high surrogate at index '%1$s'", index));
-			}
-			else
-			{
-				codePoint = firstCharacter;
-				indexIncrement = NonSurrogateIncrement;
-			}
-
-			codePointUser.useCodePoint(index, codePoint);
-
-			index += indexIncrement;
-		}
 	}
 
 	@NotNull
