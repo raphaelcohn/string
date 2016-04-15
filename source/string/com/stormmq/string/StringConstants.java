@@ -57,7 +57,7 @@ public final class StringConstants
 	@NotNull @NonNls public static final String StaticInitializerMethodName = "<clinit>";
 	@NotNull @NonNls public static final String InstanceInitializerMethodName = "<init>";
 
-	@SuppressWarnings("HardcodedFileSeparator") private static final char InternalTypeNameSeparator = '/';
+	@SuppressWarnings("HardcodedFileSeparator") public static final char InternalTypeNameSeparator = '/';
 	@NotNull @NonNls public static final String InternalTypeNameSeparatorString = String.valueOf(InternalTypeNameSeparator);
 	public static final char ExternalTypeNameSeparator = '.';
 	@NotNull @NonNls public static final String ExternalTypeNameSeparatorString = String.valueOf(InternalTypeNameSeparator);
