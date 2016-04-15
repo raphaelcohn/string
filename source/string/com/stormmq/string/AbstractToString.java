@@ -59,7 +59,7 @@ public abstract class AbstractToString
 		final int length = arguments.length;
 		for (int index = 0; index < length; index++)
 		{
-			if (index != 1)
+			if (index != 0)
 			{
 				stringBuilder.append(", ");
 			}

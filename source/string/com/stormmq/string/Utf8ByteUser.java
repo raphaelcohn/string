@@ -56,7 +56,7 @@ public interface Utf8ByteUser<X extends Exception>
 	static byte[] encodeToUtf8ByteArray(@NonNls @NotNull final CharSequence value) throws InvalidUtf16StringException
 	{
 		final ByteBuffer byteBuffer = allocate(maximumUtf16ToUtf8EncodingSize(value));
-		final Utf8ByteUser<RuntimeException> utf8ByteUser = utf8Byte ->
+		final Utf8ByteUser<RuntimeException> utf8ByteUser = (byteIndex, sequenceLength, utf8Byte) ->
 		{
 			//noinspection NumericCastThatLosesPrecision
 			byteBuffer.put((byte) utf8Byte);
@@ -76,7 +76,7 @@ public interface Utf8ByteUser<X extends Exception>
 			private int count = 0;
 
 			@Override
-			public void useUnsignedByte(final int utf8Byte)
+			public void useUnsignedByte(final int byteIndex, final int sequenceLength, final int utf8Byte)
 			{
 				count++;
 			}
@@ -86,7 +86,7 @@ public interface Utf8ByteUser<X extends Exception>
 		return counter.count;
 	}
 
-	void useUnsignedByte(final int utf8Byte) throws X;
+	void useUnsignedByte(final int byteIndex, final int sequenceLength, final int utf8Byte) throws X;
 
 	default void encodeUtf8Bytes(@NotNull final CharSequence value) throws InvalidUtf16StringException, X
 	{
@@ -101,31 +101,31 @@ public interface Utf8ByteUser<X extends Exception>
 		{
 			if (codePoint < 0x80)
 			{
-				useUnsignedByte(codePoint);
+				useUnsignedByte(0, 1, codePoint);
 				return;
 			}
 
 			if (codePoint < 0x07FF)
 			{
-				useUnsignedByte(192 + (codePoint >>> 6));
-				useUnsignedByte(128 + (codePoint % 64));
+				useUnsignedByte(0, 2, 192 + (codePoint >>> 6));
+				useUnsignedByte(1, 2, 128 + (codePoint % 64));
 				return;
 			}
 
 			if (codePoint < 0xFFFF)
 			{
-				useUnsignedByte(224 + (codePoint >>> 12));
-				useUnsignedByte(128 + ((codePoint >> 6) & 0x3F));
-				useUnsignedByte(128 + (codePoint & 0x3F));
+				useUnsignedByte(0, 3, 224 + (codePoint >>> 12));
+				useUnsignedByte(1, 3, 128 + ((codePoint >> 6) & 0x3F));
+				useUnsignedByte(2, 3, 128 + (codePoint & 0x3F));
 				return;
 			}
 
 			if (codePoint < 0x1FFFFF)
 			{
-				useUnsignedByte(240 + (codePoint >>> 18));
-				useUnsignedByte(128 + ((codePoint >>> 12) & 0x3F));
-				useUnsignedByte(128 + ((codePoint >>> 6) & 0x3F));
-				useUnsignedByte(128 + (codePoint & 0x3F));
+				useUnsignedByte(0, 4, 240 + (codePoint >>> 18));
+				useUnsignedByte(1, 4, 128 + ((codePoint >>> 12) & 0x3F));
+				useUnsignedByte(2, 4, 128 + ((codePoint >>> 6) & 0x3F));
+				useUnsignedByte(3, 4, 128 + (codePoint & 0x3F));
 				return;
 			}
 
