@@ -30,7 +30,7 @@ public final class StringConstants
 	@NotNull @NonNls public static final String Should_not_be_possible = "Should not be possible";
 	@NotNull @NonNls public static final String Should_be_impossible = "Should be impossible";
 
-	@NotNull @NonNls public static final String value = "value";
+	@NotNull @NonNls private static final String value = "value";
 	@NotNull @NonNls public static final String DefaultAnnotationMemberName = value;
 
 	// Keywords
@@ -57,7 +57,7 @@ public final class StringConstants
 	@NotNull @NonNls public static final String StaticInitializerMethodName = "<clinit>";
 	@NotNull @NonNls public static final String InstanceInitializerMethodName = "<init>";
 
-	@SuppressWarnings("HardcodedFileSeparator") public static final char InternalTypeNameSeparator = '/';
+	@SuppressWarnings("HardcodedFileSeparator") private static final char InternalTypeNameSeparator = '/';
 	@NotNull @NonNls public static final String InternalTypeNameSeparatorString = String.valueOf(InternalTypeNameSeparator);
 	public static final char ExternalTypeNameSeparator = '.';
 	@NotNull @NonNls public static final String ExternalTypeNameSeparatorString = String.valueOf(InternalTypeNameSeparator);

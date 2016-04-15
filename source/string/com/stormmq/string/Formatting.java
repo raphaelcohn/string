@@ -61,7 +61,6 @@ public final class Formatting
 	private static final int IntMask = 0x00_00_00_0F;
 	private static final long LongMask = 0x00_00_00_00_00_00_00_0FL;
 	
-	@SuppressWarnings("MagicNumber")
 	@NotNull
 	private static String[] upperCaseHexadecimalBytes()
 	{

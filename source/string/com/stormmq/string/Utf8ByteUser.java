@@ -73,14 +73,14 @@ public interface Utf8ByteUser<X extends Exception>
 	{
 		class Counter implements Utf8ByteUser<RuntimeException>
 		{
-			public int count = 0;
+			private int count = 0;
 
 			@Override
 			public void useUnsignedByte(final int utf8Byte)
 			{
 				count++;
 			}
-		};
+		}
 		@SuppressWarnings("ClassReferencesSubclass") final Counter counter = new Counter();
 		counter.encodeUtf8Bytes(value);
 		return counter.count;

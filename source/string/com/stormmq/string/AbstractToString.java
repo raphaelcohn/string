@@ -93,7 +93,6 @@ public abstract class AbstractToString
 	{
 	}
 
-	@SuppressWarnings("FinalizeDeclaration")
 	@Override
 	protected final void finalize()
 	{
