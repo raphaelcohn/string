@@ -117,7 +117,7 @@ public abstract class AbstractToString
 
 	@SuppressWarnings("OverloadedVarargsMethod")
 	@NotNull
-	protected static Object[] fields(@NotNull final Object... fields)
+	protected static Object[] fields(@NonNls @NotNull final Object... fields)
 	{
 		return fields;
 	}
